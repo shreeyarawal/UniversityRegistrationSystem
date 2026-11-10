@@ -1,0 +1,19 @@
+
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local SQLite database
+university.db
+university.db-journal
+university.db-wal
+university.db-shm
+
+# macOS files
+.DS_Store
+
+# Environment variables and secrets
+.env

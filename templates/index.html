@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>University Registration System</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #243247;
+            margin: 0;
+        }
+
+        header {
+            background: #183b65;
+            color: white;
+            padding: 32px 20px;
+            text-align: center;
+        }
+
+        header h1 { margin: 0 0 10px; }
+
+        main {
+            max-width: 1100px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        section {
+            background: white;
+            padding: 24px;
+            margin-bottom: 22px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #00000010;
+        }
+
+        h2 { margin-top: 0; }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        input, select {
+            padding: 11px;
+            border: 1px solid #bbc6d5;
+            border-radius: 5px;
+            flex: 1;
+            min-width: 170px;
+        }
+
+        button {
+            background: #2463a6;
+            border: none;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover { background: #174878; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th { background: #edf2f8; }
+
+        .table-container { overflow-x: auto; }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d9f4e3;
+            color: #176137;
+        }
+
+        .error {
+            background: #ffe2e2;
+            color: #9b2525;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>University Registration System</h1>
+        <p>Student, Course & Enrollment Management</p>
+        <p>Python | Flask | SQLite</p>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <section>
+            <h2>Add New Student</h2>
+            <form action="{{ url_for('add_student') }}"
+                  method="POST">
+                <input name="first_name"
+                       placeholder="First Name"
+                       maxlength="50" required>
+                <input name="last_name"
+                       placeholder="Last Name"
+                       maxlength="50" required>
+                <input type="email" name="email"
+                       placeholder="Email"
+                       maxlength="100" required>
+                <button type="submit">Add Student</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Add New Course</h2>
+            <form action="{{ url_for('add_course') }}"
+                  method="POST">
+                <input name="course_code"
+                       placeholder="Course Code (e.g. MAC250)"
+                       maxlength="10" required>
+                <input type="number" name="credits"
+                       placeholder="Credits"
+                       min="1" max="6" required>
+                <button type="submit">Add Course</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Enroll Student in Course</h2>
+            <form action="{{ url_for('enroll') }}"
+                  method="POST">
+                <select name="student_id" required>
+                    <option value="">Select Student</option>
+                    {% for student in students %}
+                        <option value="{{ student.StudentID }}">
+                            {{ student.FirstName }}
+                            {{ student.LastName }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <select name="course_id" required>
+                    <option value="">Select Course</option>
+                    {% for course in courses %}
+                        <option value="{{ course.CourseID }}">
+                            {{ course.CourseCode }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Enroll Student</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Show All Students</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.StudentID }}</td>
+                            <td>{{ student.FirstName }}</td>
+                            <td>{{ student.LastName }}</td>
+                            <td>{{ student.Email }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4">No students yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>Show All Courses</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course ID</th>
+                            <th>Course Code</th>
+                            <th>Credits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
+                        <tr>
+                            <td>{{ course.CourseID }}</td>
+                            <td>{{ course.CourseCode }}</td>
+                            <td>{{ course.Credits }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3">No courses yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>Show All Enrollments</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Enrollment ID</th>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Registration Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in enrollments %}
+                        <tr>
+                            <td>{{ enrollment.EnrollmentID }}</td>
+                            <td>
+                                {{ enrollment.FirstName }}
+                                {{ enrollment.LastName }}
+                            </td>
+                            <td>{{ enrollment.CourseCode }}</td>
+                            <td>{{ enrollment.RegistrationDate }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4">
+                                No enrollments yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
